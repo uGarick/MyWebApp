@@ -23,9 +23,13 @@ def login():
         if request.form.get("login"):
             username = request.form.get('username')
             password = request.form.get('password')
+            if username == '' or password == '':
+                return render_template('error.html', error='Enter your login and password!')
             cursor.execute("SELECT * FROM service.users WHERE login=%s AND password=%s", (str(username), str(password)))
             records = list(cursor.fetchall())
-            return render_template('account.html', full_name=records[0][1])
+            if len(records) == 0:
+                return render_template('error.html', error='There is no such a user')
+            return render_template('account.html', full_name=records[0][1], password=records[0][3], login=records[0][2])
         elif request.form.get("registration"):
             return redirect("/registration/")
 
